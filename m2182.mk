@@ -141,13 +141,6 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.vendor.qteeconnector.retrying_interval=30 \
     persist.vendor.qteeconnector.retrying_timeout=2000
 
-###########
-# Target naming
-PRODUCT_NAME := lahaina
-PRODUCT_DEVICE := lahaina
-PRODUCT_BRAND := qti
-PRODUCT_MODEL := Lahaina for arm64
-
 #----------------------------------------------------------------------
 # wlan specific
 #----------------------------------------------------------------------
@@ -308,15 +301,15 @@ PRODUCT_PACKAGES += android.hardware.camera.provider@2.4-impl
 # Enable binderized camera HAL
 PRODUCT_PACKAGES += android.hardware.camera.provider@2.4-service_64
 
-DEVICE_FRAMEWORK_MANIFEST_FILE := device/qcom/lahaina/framework_manifest.xml
+DEVICE_FRAMEWORK_MANIFEST_FILE := device/meizu/m2182/framework_manifest.xml
 
 # QCV allows multiple chipsets to be supported on a single vendor.
 # Add vintf device manifests for chipsets in Lahaina QCV family below.
 TARGET_USES_QCV := true
 DEVICE_MANIFEST_SKUS := lahaina shima yupik
-DEVICE_MANIFEST_LAHAINA_FILES := device/qcom/lahaina/manifest_lahaina.xml
-DEVICE_MANIFEST_SHIMA_FILES := device/qcom/lahaina/manifest_shima.xml
-DEVICE_MANIFEST_YUPIK_FILES := device/qcom/lahaina/manifest_yupik.xml
+DEVICE_MANIFEST_LAHAINA_FILES := device/meizu/m2182/manifest_lahaina.xml
+DEVICE_MANIFEST_SHIMA_FILES := device/meizu/m2182/manifest_shima.xml
+DEVICE_MANIFEST_YUPIK_FILES := device/meizu/m2182/manifest_yupik.xml
 
 DEVICE_MATRIX_FILE   := device/qcom/common/compatibility_matrix.xml
 
@@ -428,7 +421,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.vendor.radio.enableadvancedscan=true
 
 PRODUCT_COPY_FILES += \
-    device/qcom/lahaina/task_profiles.json:$(TARGET_COPY_OUT_VENDOR)/etc/task_profiles.json
+    device/meizu/m2182/task_profiles.json:$(TARGET_COPY_OUT_VENDOR)/etc/task_profiles.json
 
 # ODM ueventd.rc
 # - only for use with VM support right now
