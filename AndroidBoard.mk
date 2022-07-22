@@ -27,8 +27,6 @@ LOCAL_SRC_FILES    := charger/charger_fw_fstab.qti
 LOCAL_MODULE_PATH  := $(TARGET_OUT_VENDOR_ETC)
 include $(BUILD_PREBUILT)
 
-include device/qcom/vendor-common/MergeConfig.mk
-
 #----------------------------------------------------------------------
 # Radio image
 #----------------------------------------------------------------------

@@ -33,3 +33,19 @@ PRODUCT_PROPERTY_OVERRIDES += \
 # Permissions
 PRODUCT_PROPERTY_OVERRIDES += \
 	ro.control_privapp_permissions=enforce
+
+# FRP
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.frp.pst=/dev/block/bootdevice/by-name/config/frp
+
+# QCOM system daemon
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.vendor.qcomsysd.enabled=1
+
+# GNSS
+PRODUCT_PROPERTY_OVERRIDES += \
+    persist.backup.ntpServer=0.pool.ntp.org
+
+# Shutdown
+PRODUCT_PROPERTY_OVERRIDES += \
+    sys.vendor.shutdown.waittime=500

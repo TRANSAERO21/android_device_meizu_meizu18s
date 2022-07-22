@@ -192,6 +192,7 @@ BOARD_HAVE_QCOM_FM := false
 DEVICE_MATRIX_FILE := device/qcom/common/compatibility_matrix.xml
 DEVICE_MANIFEST_FILE := device/meizu/m2182/manifest.xml
 DEVICE_FRAMEWORK_MANIFEST_FILE := device/meizu/m2182/framework_manifest.xml
+DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE := vendor/qcom/opensource/core-utils/vendor_framework_compatibility_matrix.xml
 
 # DIAG
 TARGET_HAS_DIAG_ROUTER := true
@@ -209,3 +210,9 @@ PRODUCT_VENDOR_MOVE_ENABLED := true
 PRODUCT_COMPATIBLE_PROPERTY_OVERRIDE := true
 RECOVERY_SNAPSHOT_VERSION := current
 RAMDISK_SNAPSHOT_VERSION := current
+
+# Releasetools
+TARGET_RELEASETOOLS_EXTENSIONS := device/meizu/m2182/releasetool.py
+
+# Filesystem
+TARGET_FS_CONFIG_GEN := device/meizu/m2182/config.fs
