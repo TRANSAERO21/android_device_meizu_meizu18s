@@ -115,7 +115,17 @@ TARGET_RECOVERY_UPDATER_LIBS += librecovery_updater_msm
 
 # A/B
 AB_OTA_UPDATER := true
-AB_OTA_PARTITIONS := boot vendor_boot vendor odm dtbo vbmeta system system_ext product
+AB_OTA_PARTITIONS := \
+    boot \
+    vendor_boot \
+    vendor \
+    odm \
+    dtbo \
+    vbmeta \
+    vbmeta_system \
+    system \
+    system_ext \
+    product
 
 # AVB
 BOARD_AVB_ENABLE := true
