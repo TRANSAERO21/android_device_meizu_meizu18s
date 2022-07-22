@@ -1,40 +1,10 @@
 LOCAL_PATH := $(call my-dir)
 
 #----------------------------------------------------------------------
-# Host compiler configs
-#----------------------------------------------------------------------
-SOURCE_ROOT := $(shell pwd)
-TARGET_HOST_COMPILER_PREFIX_OVERRIDE := prebuilts/gcc/linux-x86/host/x86_64-linux-glibc2.17-4.8/bin/x86_64-linux-
-TARGET_HOST_CC_OVERRIDE := $(TARGET_HOST_COMPILER_PREFIX_OVERRIDE)gcc
-TARGET_HOST_CXX_OVERRIDE := $(TARGET_HOST_COMPILER_PREFIX_OVERRIDE)g++
-TARGET_HOST_AR_OVERRIDE := $(TARGET_HOST_COMPILER_PREFIX_OVERRIDE)ar
-TARGET_HOST_LD_OVERRIDE := $(TARGET_HOST_COMPILER_PREFIX_OVERRIDE)ld
-
-#----------------------------------------------------------------------
-# Compile (L)ittle (K)ernel bootloader and the nandwrite utility
-#----------------------------------------------------------------------
-ifneq ($(strip $(TARGET_NO_BOOTLOADER)),true)
-
-# Compile
-include bootable/bootloader/edk2/AndroidBoot.mk
-
-$(INSTALLED_BOOTLOADER_MODULE): $(TARGET_EMMC_BOOTLOADER) | $(ACP)
-#   $(transform-prebuilt-to-target)
-$(BUILT_TARGET_FILES_PACKAGE): $(INSTALLED_BOOTLOADER_MODULE)
-
-droidcore: $(INSTALLED_BOOTLOADER_MODULE)
-endif
-
-#----------------------------------------------------------------------
-# Compile Linux Kernel
-#----------------------------------------------------------------------
-include device/qcom/kernelscripts/kernel_definitions.mk
-
-#----------------------------------------------------------------------
 # Copy additional target-specific files
 #----------------------------------------------------------------------
 include $(CLEAR_VARS)
-LOCAL_MODULE       := init.target.rc
+LOCAL_MODULE       := init/init.target.rc
 LOCAL_MODULE_TAGS  := optional
 LOCAL_MODULE_CLASS := ETC
 LOCAL_SRC_FILES    := $(LOCAL_MODULE)
@@ -45,23 +15,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE       := fstab.default
 LOCAL_MODULE_TAGS  := optional
 LOCAL_MODULE_CLASS := ETC
-ifeq ($(ENABLE_AB), true)
-  LOCAL_SRC_FILES := default/fstab.qcom
-else
-  LOCAL_SRC_FILES := default/fstab_non_AB.qcom
-endif
-LOCAL_MODULE_PATH  := $(TARGET_OUT_VENDOR_ETC)
-include $(BUILD_PREBUILT)
-
-include $(CLEAR_VARS)
-LOCAL_MODULE       := fstab.emmc
-LOCAL_MODULE_TAGS  := optional
-LOCAL_MODULE_CLASS := ETC
-ifeq ($(ENABLE_AB), true)
-   LOCAL_SRC_FILES := emmc/fstab.qcom
-else
-   LOCAL_SRC_FILES := emmc/fstab_non_AB.qcom
-endif
+LOCAL_SRC_FILES    := init/fstab.qcom
 LOCAL_MODULE_PATH  := $(TARGET_OUT_VENDOR_ETC)
 include $(BUILD_PREBUILT)
 
@@ -69,11 +23,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE       := charger_fw_fstab.qti
 LOCAL_MODULE_TAGS  := optional
 LOCAL_MODULE_CLASS := ETC
-ifeq ($(ENABLE_AB), true)
-    LOCAL_SRC_FILES    := charger_fw_fstab.qti
-else
-    LOCAL_SRC_FILES    := charger_fw_fstab_non_AB.qti
-endif
+LOCAL_SRC_FILES    := charger/charger_fw_fstab.qti
 LOCAL_MODULE_PATH  := $(TARGET_OUT_VENDOR_ETC)
 include $(BUILD_PREBUILT)
 

@@ -1,14 +1,7 @@
-# config.mk
-#
-# Product-specific compile-time definitions.
-#
-# TODO(b/124534788): Temporarily allow eng and debug LOCAL_MODULE_TAGS
+# Build
+BUILD_BROKEN_DUP_RULES := true
 
-BOARD_SYSTEMSDK_VERSIONS := 30
-
-TARGET_BOARD_PLATFORM := lahaina
-TARGET_BOOTLOADER_BOARD_NAME := lahaina
-
+# Architecture
 TARGET_ARCH := arm64
 TARGET_ARCH_VARIANT := armv8-a
 TARGET_CPU_ABI := arm64-v8a
@@ -21,312 +14,198 @@ TARGET_2ND_CPU_ABI := armeabi-v7a
 TARGET_2ND_CPU_ABI2 := armeabi
 TARGET_2ND_CPU_VARIANT := cortex-a75
 
-TARGET_NO_BOOTLOADER := false
+# Bootloader
+TARGET_BOOTLOADER_BOARD_NAME := lahaina
+TARGET_NO_BOOTLOADER := true
 TARGET_USES_UEFI := true
+
+# API
+BOARD_SYSTEMSDK_VERSIONS := 30
+SHIPPING_API_LEVEL := 30
+
+# Platform
+QCOM_BOARD_PLATFORMS += lahaina
+TARGET_BOARD_PLATFORM := lahaina
+
+# Kernel
 TARGET_NO_KERNEL := false
 
--include $(QCPATH)/common/lahaina/BoardConfigVendor.mk
+BOARD_KERNEL_CMDLINE := \
+	console=ttyMSM0,115200n8 \
+	androidboot.hardware=qcom \
+	androidboot.console=ttyMSM0 \
+	androidboot.memcg=1 \
+	lpm_levels.sleep_disabled=1 \
+	video=vfb:640x400,bpp=32,memsize=3072000 \
+	msm_rtb.filter=0x237 \
+	service_locator.enable=1 \
+	androidboot.usbcontroller=a600000.dwc3 \
+	swiotlb=0 \
+	loop.max_part=7 \
+	cgroup.memory=nokmem,nosocket \
+	pcie_ports=compat \
+	loop.max_part=7 \
+	iptable_raw.raw_before_defrag=1 \
+	ip6table_raw.raw_before_defrag=1
 
-USE_OPENGL_RENDERER := true
+BOARD_KERNEL_BASE := 0x00000000
+BOARD_KERNEL_PAGESIZE := 4096
+BOARD_KERNEL_TAGS_OFFSET := 0x01E00000
+BOARD_RAMDISK_OFFSET := 0x02000000
 
-#Generate DTBO image
+# Kernel compilation
+TARGET_KERNEL_ARCH := arm64
+TARGET_KERNEL_HEADER_ARCH := arm64
+TARGET_COMPILE_WITH_MSM_KERNEL := true
+TARGET_KERNEL_CROSS_COMPILE_PREFIX := aarch64-linux-android-
+TARGET_USES_UNCOMPRESSED_KERNEL := false
+
+# DTB
+BOARD_INCLUDE_DTB_IN_BOOTIMG := true
+TARGET_KERNEL_APPEND_DTB := false
+
+# DTBO
 BOARD_KERNEL_SEPARATED_DTBO := true
+BOARD_INCLUDE_RECOVERY_DTBO := true
 
-### Dynamic partition Handling
-# Define the Dynamic Partition sizes and groups.
-ifeq ($(ENABLE_AB), true)
-    ifeq ($(ENABLE_VIRTUAL_AB), true)
-        BOARD_SUPER_PARTITION_SIZE := 6442450944
-    else
-        BOARD_SUPER_PARTITION_SIZE := 12884901888
-    endif
-else
-        BOARD_SUPER_PARTITION_SIZE := 6442450944
-endif
-ifeq ($(BOARD_KERNEL_SEPARATED_DTBO),true)
-    # Enable DTBO for recovery image
-    BOARD_INCLUDE_RECOVERY_DTBO := true
-endif
+# Boot header
+BOARD_BOOT_HEADER_VERSION := 3
+BOARD_MKBOOTIMG_ARGS := --header_version $(BOARD_BOOT_HEADER_VERSION)
+
+# Dynamic partitions
+BOARD_USES_METADATA_PARTITION := true
+BOARD_SUPER_PARTITION_SIZE := 6442450944
 BOARD_SUPER_PARTITION_GROUPS := qti_dynamic_partitions
 BOARD_QTI_DYNAMIC_PARTITIONS_SIZE := 6438256640
 BOARD_QTI_DYNAMIC_PARTITIONS_PARTITION_LIST := vendor odm
-BOARD_RECOVERYIMAGE_PARTITION_SIZE := 0x06400000
 
-TARGET_COPY_OUT_ODM := odm
-BOARD_ODMIMAGE_FILE_SYSTEM_TYPE := ext4
-ifeq ($(ENABLE_AB), true)
-AB_OTA_PARTITIONS ?= boot vendor_boot vendor odm dtbo vbmeta
-endif
-BOARD_EXT4_SHARE_DUP_BLOCKS := true
-
-ifeq ($(ENABLE_AB), true)
-# Defines for enabling A/B builds
-AB_OTA_UPDATER := true
-TARGET_RECOVERY_FSTAB := device/qcom/lahaina/recovery.fstab
-else
-TARGET_RECOVERY_FSTAB := device/qcom/lahaina/recovery_non_AB.fstab
-BOARD_CACHEIMAGE_PARTITION_SIZE := 268435456
-BOARD_CACHEIMAGE_FILE_SYSTEM_TYPE := ext4
-endif
-
-ifeq ($(BOARD_AVB_ENABLE), true)
-    BOARD_AVB_RECOVERY_KEY_PATH := external/avb/test/data/testkey_rsa4096.pem
-    BOARD_AVB_RECOVERY_ALGORITHM := SHA256_RSA4096
-    BOARD_AVB_RECOVERY_ROLLBACK_INDEX := 1
-    BOARD_AVB_RECOVERY_ROLLBACK_INDEX_LOCATION := 1
-endif
-
-
-BOARD_USES_METADATA_PARTITION := true
-
-#Enable compilation of oem-extensions to recovery
-#These need to be explicitly
-ifneq ($(AB_OTA_UPDATER),true)
-    TARGET_RECOVERY_UPDATER_LIBS += librecovery_updater_msm
-endif
-
-TARGET_COPY_OUT_VENDOR := vendor
-BOARD_PROPERTY_OVERRIDES_SPLIT_ENABLED := true
-
-TARGET_USERIMAGES_USE_EXT4 := true
-TARGET_USERIMAGES_USE_F2FS := true
-BOARD_SYSTEMIMAGE_FILE_SYSTEM_TYPE := ext4
-BOARD_USERDATAIMAGE_FILE_SYSTEM_TYPE := f2fs
+# Partitions size
 BOARD_BOOTIMAGE_PARTITION_SIZE := 0x06000000
 BOARD_KERNEL-GKI_BOOTIMAGE_PARTITION_SIZE := $(BOARD_BOOTIMAGE_PARTITION_SIZE)
 BOARD_VENDOR_BOOTIMAGE_PARTITION_SIZE := 0x06000000
 BOARD_USERDATAIMAGE_PARTITION_SIZE := 48318382080
 BOARD_PERSISTIMAGE_PARTITION_SIZE := 33554432
-BOARD_PERSISTIMAGE_FILE_SYSTEM_TYPE := ext4
 BOARD_METADATAIMAGE_PARTITION_SIZE := 16777216
 BOARD_DTBOIMG_PARTITION_SIZE := 0x1800000
+BOARD_FLASH_BLOCK_SIZE := 131072 
+
+# Partitions file system
+TARGET_USERIMAGES_USE_EXT4 := true
+TARGET_USERIMAGES_USE_F2FS := true
+BOARD_EXT4_SHARE_DUP_BLOCKS := true
+BOARD_SYSTEMIMAGE_FILE_SYSTEM_TYPE := ext4
 BOARD_VENDORIMAGE_FILE_SYSTEM_TYPE := ext4
-BOARD_FLASH_BLOCK_SIZE := 131072 # (BOARD_KERNEL_PAGESIZE * 64)
+BOARD_USERDATAIMAGE_FILE_SYSTEM_TYPE := f2fs
+BOARD_PERSISTIMAGE_FILE_SYSTEM_TYPE := ext4
+BOARD_ODMIMAGE_FILE_SYSTEM_TYPE := ext4
 
-#BOARD_VENDOR_KERNEL_MODULES := \
-#    $(KERNEL_MODULES_OUT)/audio_apr.ko \
-#    $(KERNEL_MODULES_OUT)/audio_q6_pdr.ko \
-#    $(KERNEL_MODULES_OUT)/audio_q6_notifier.ko \
-#    $(KERNEL_MODULES_OUT)/audio_adsp_loader.ko \
-#    $(KERNEL_MODULES_OUT)/audio_q6.ko \
-#    $(KERNEL_MODULES_OUT)/audio_usf.ko \
-#    $(KERNEL_MODULES_OUT)/audio_pinctrl_wcd.ko \
-#    $(KERNEL_MODULES_OUT)/audio_pinctrl_lpi.ko \
-#    $(KERNEL_MODULES_OUT)/audio_swr.ko \
-#    $(KERNEL_MODULES_OUT)/audio_wcd_core.ko \
-#    $(KERNEL_MODULES_OUT)/audio_swr_ctrl.ko \
-#    $(KERNEL_MODULES_OUT)/audio_wsa881x.ko \
-#    $(KERNEL_MODULES_OUT)/audio_platform.ko \
-#    $(KERNEL_MODULES_OUT)/audio_hdmi.ko \
-#    $(KERNEL_MODULES_OUT)/audio_stub.ko \
-#    $(KERNEL_MODULES_OUT)/audio_wcd9xxx.ko \
-#    $(KERNEL_MODULES_OUT)/audio_mbhc.ko \
-#    $(KERNEL_MODULES_OUT)/audio_wcd938x.ko \
-#    $(KERNEL_MODULES_OUT)/audio_wcd938x_slave.ko \
-#    $(KERNEL_MODULES_OUT)/audio_bolero_cdc.ko \
-#    $(KERNEL_MODULES_OUT)/audio_wsa_macro.ko \
-#    $(KERNEL_MODULES_OUT)/audio_va_macro.ko \
-#    $(KERNEL_MODULES_OUT)/audio_rx_macro.ko \
-#    $(KERNEL_MODULES_OUT)/audio_tx_macro.ko \
-#    $(KERNEL_MODULES_OUT)/audio_native.ko \
-#    $(KERNEL_MODULES_OUT)/audio_machine_lahaina.ko \
-#    $(KERNEL_MODULES_OUT)/audio_snd_event.ko \
-#    $(KERNEL_MODULES_OUT)/qca_cld3_wlan.ko \
-#    $(KERNEL_MODULES_OUT)/wil6210.ko \
-#    $(KERNEL_MODULES_OUT)/msm_11ad_proxy.ko \
-#    $(KERNEL_MODULES_OUT)/br_netfilter.ko \
-#    $(KERNEL_MODULES_OUT)/gspca_main.ko \
-#    $(KERNEL_MODULES_OUT)/lcd.ko \
-#    $(KERNEL_MODULES_OUT)/llcc_perfmon.ko \
+# Partitions
+TARGET_COPY_OUT_VENDOR := vendor
+TARGET_COPY_OUT_ODM := odm
 
-# check for for userdebug and eng build variants and install the appropriate modules
-#ifneq (,$(filter userdebug eng, $(TARGET_BUILD_VARIANT)))
-#ifeq (,$(findstring perf_defconfig, $(KERNEL_DEFCONFIG)))
-#BOARD_VENDOR_KERNEL_MODULES += $(KERNEL_MODULES_OUT)/atomic64_test.ko
-#BOARD_VENDOR_KERNEL_MODULES += $(KERNEL_MODULES_OUT)/lkdtm.ko
-#BOARD_VENDOR_KERNEL_MODULES += $(KERNEL_MODULES_OUT)/locktorture.ko
-#BOARD_VENDOR_KERNEL_MODULES += $(KERNEL_MODULES_OUT)/rcutorture.ko
-#BOARD_VENDOR_KERNEL_MODULES += $(KERNEL_MODULES_OUT)/test_user_copy.ko
-#BOARD_VENDOR_KERNEL_MODULES += $(KERNEL_MODULES_OUT)/torture.ko
-#endif
-#endif
+# Recovery
+BOARD_USES_RECOVERY_AS_BOOT := true
+TARGET_NO_RECOVERY := true
+TARGET_RECOVERY_FSTAB := device/qcom/lahaina/recovery/recovery.fstab
+TARGET_RECOVERY_UPDATER_LIBS += librecovery_updater_msm
 
+# A/B
+AB_OTA_UPDATER := true
+AB_OTA_PARTITIONS := boot vendor_boot vendor odm dtbo vbmeta
 
-ifeq "$(KERNEL_DEFCONFIG)" "vendor/$(TARGET_BOARD_PLATFORM)-qgki_defconfig"
-BOARD_KERNEL_BINARIES := kernel kernel-gki
-endif
+# AVB
+BOARD_AVB_ENABLE := true
+BOARD_AVB_VBMETA_SYSTEM := system
+BOARD_AVB_VBMETA_SYSTEM_KEY_PATH := external/avb/test/data/testkey_rsa2048.pem
+BOARD_AVB_VBMETA_SYSTEM_ALGORITHM := SHA256_RSA2048
+BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX := $(PLATFORM_SECURITY_PATCH_TIMESTAMP)
+BOARD_AVB_VBMETA_SYSTEM_ROLLBACK_INDEX_LOCATION := 2
 
-ifeq (,$(findstring -qgki-debug_defconfig,$(KERNEL_DEFCONFIG)))
-$(warning #### GKI config ####)
-VENDOR_RAMDISK_KERNEL_MODULES := proxy-consumer.ko \
-				rpmh-regulator.ko \
-				refgen.ko \
-				stub-regulator.ko \
-                                clk-dummy.ko \
-				clk-qcom.ko \
-				clk-rpmh.ko \
-				gcc-lahaina.ko \
-				gcc-shima.ko \
-				gcc-yupik.ko \
-				qnoc-qos.ko \
-				qnoc-lahaina.ko \
-				qnoc-shima.ko \
-				qnoc-yupik.ko \
-				cmd-db.ko \
-				qcom_rpmh.ko \
-				rpmhpd.ko \
-				icc-bcm-voter.ko \
-				icc-rpmh.ko \
-				pinctrl-msm.ko \
-				pinctrl-lahaina.ko \
-				pinctrl-shima.ko \
-				pinctrl-yupik.ko \
-				_qcom_scm.ko \
-				secure_buffer.ko \
-				iommu-logger.ko \
-				qcom-arm-smmu-mod.ko \
-				phy-qcom-ufs.ko \
-				phy-qcom-ufs-qrbtc-sdm845.ko \
-				phy-qcom-ufs-qmp-v4-lahaina.ko\
-				phy-qcom-ufs-qmp-v4-yupik.ko\
-				ufshcd-crypto-qti.ko \
-				crypto-qti-common.ko \
-				crypto-qti-hwkm.ko \
-				hwkm.ko \
-				ufs-qcom.ko \
-				qbt_handler.ko \
-				qcom_watchdog.ko \
-				qcom-pdc.ko \
-				qpnp-power-on.ko \
-				msm-poweroff.ko \
-				sdhci-msm.ko \
-				cqhci.ko \
-				cqhci-crypto.ko \
-				cqhci-crypto-qti.ko \
-				memory_dump_v2.ko
-else
-$(warning #### QGKI config ####)
-endif
+# Kernel Modules
+# BOARD_VENDOR_KERNEL_MODULES := $(wildcard $(DEFINED_VENDOR_KERNEL_MODULES_PATH)/*.ko)
 
-# Append the list of .ko that needs to be included as a part of vendor-ramdisk
-# only in QGKI variants, but not in GKI.
-ifneq "$(KERNEL_DEFCONFIG)" "vendor/$(TARGET_BOARD_PLATFORM)-gki_defconfig"
-BOARD_VENDOR_RAMDISK_KERNEL_MODULES := $(KERNEL_MODULES_OUT)/msm_drm.ko
-endif
+# GKI
+# BOARD_VENDOR_RAMDISK_KERNEL_MODULES := $(wildcard $(DEFINED_VENDOR_RAMDISK_KERNEL_MODULES_PATH)/*.ko)
 
+# Treble
 BOARD_DO_NOT_STRIP_VENDOR_MODULES := true
+
+# Radio
+ADD_RADIO_FILES := true
+
+# Properties
+BOARD_PROPERTY_OVERRIDES_SPLIT_ENABLED := true
+
+# WLAN
+include device/qcom/wlan/lahaina/BoardConfigWlan.mk
+
+# SEPolicy
+include device/qcom/sepolicy_vndr/SEPolicy.mk
+
+# Init
+TARGET_PLATFORM_DEVICE_BASE := /devices/soc.0/
+
+# Sensors
+USE_SENSOR_MULTI_HAL := true
+
+# GPS
+TARGET_NO_RPC := true
+
+# QSPM
+TARGET_USES_QSPM := true
+
+# PD
+TARGET_PD_SERVICE_ENABLED := true
+
+# Peripheral Manager
+TARGET_PER_MGR_ENABLED := true
+
+# Camera
+BOARD_QTI_CAMERA_32BIT_ONLY := true
+
+# Display
 TARGET_USES_ION := true
 TARGET_USES_NEW_ION_API :=true
-
-BOARD_KERNEL_CMDLINE := console=ttyMSM0,115200n8 androidboot.hardware=qcom androidboot.console=ttyMSM0 androidboot.memcg=1 lpm_levels.sleep_disabled=1 video=vfb:640x400,bpp=32,memsize=3072000 msm_rtb.filter=0x237 service_locator.enable=1 androidboot.usbcontroller=a600000.dwc3 swiotlb=0 loop.max_part=7 cgroup.memory=nokmem,nosocket pcie_ports=compat loop.max_part=7 iptable_raw.raw_before_defrag=1 ip6table_raw.raw_before_defrag=1
-
-BOARD_KERNEL_BASE        := 0x00000000
-BOARD_KERNEL_PAGESIZE    := 4096
-BOARD_KERNEL_TAGS_OFFSET := 0x01E00000
-BOARD_RAMDISK_OFFSET     := 0x02000000
-
-TARGET_KERNEL_ARCH := arm64
-TARGET_KERNEL_HEADER_ARCH := arm64
-TARGET_KERNEL_CROSS_COMPILE_PREFIX := aarch64-linux-android-
-TARGET_USES_UNCOMPRESSED_KERNEL := false
-
+USE_OPENGL_RENDERER := true
 MAX_EGL_CACHE_KEY_SIZE := 12*1024
 MAX_EGL_CACHE_SIZE := 2048*1024
 
+# Audio
 BOARD_USES_GENERIC_AUDIO := true
-BOARD_QTI_CAMERA_32BIT_ONLY := true
-TARGET_NO_RPC := true
+USE_LIB_PROCESS_GROUP := true
+TARGET_USES_AOSP := false
+TARGET_USES_AOSP_FOR_AUDIO := false
 
-TARGET_PLATFORM_DEVICE_BASE := /devices/soc.0/
-TARGET_INIT_VENDOR_LIB := libinit_msm
+# VM
+TARGET_ENABLE_VM_SUPPORT := true
 
-#Disable appended dtb.
-TARGET_KERNEL_APPEND_DTB := false
-TARGET_COMPILE_WITH_MSM_KERNEL := true
+# AV
+TARGET_ENABLE_QC_AV_ENHANCEMENTS := true
 
-#Enable dtb in boot image and boot image header version 3 support.
-BOARD_INCLUDE_DTB_IN_BOOTIMG := true
-ifeq ($(ENABLE_AB), true)
-BOARD_USES_RECOVERY_AS_BOOT := true
-TARGET_NO_RECOVERY := true
-endif
-BOARD_BOOT_HEADER_VERSION := 3
-BOARD_MKBOOTIMG_ARGS := --header_version $(BOARD_BOOT_HEADER_VERSION)
+# Bluetooth
+BOARD_HAVE_BLUETOOTH := false
 
-#Enable PD locater/notifier
-TARGET_PD_SERVICE_ENABLED := true
+# FM
+BOARD_HAVE_QCOM_FM := false
 
-#Enable peripheral manager
-TARGET_PER_MGR_ENABLED := true
+# HIDL
+DEVICE_MATRIX_FILE := device/qcom/common/compatibility_matrix.xml
+DEVICE_MANIFEST_FILE := device/meizu/m2182/manifest.xml
+DEVICE_FRAMEWORK_MANIFEST_FILE := device/meizu/m2182/framework_manifest.xml
 
-ifeq ($(HOST_OS),linux)
-    ifeq ($(WITH_DEXPREOPT),)
-      WITH_DEXPREOPT := true
-      WITH_DEXPREOPT_PIC := true
-      ifneq ($(TARGET_BUILD_VARIANT),user)
-        # Retain classes.dex in APK's for non-user builds
-        DEX_PREOPT_DEFAULT := nostripping
-      endif
-    endif
-endif
+# DIAG
+TARGET_HAS_DIAG_ROUTER := true
 
-#Add non-hlos files to ota packages
-ADD_RADIO_FILES := true
+# QESDK
+PRODUCT_ENABLE_QESDK := true
 
+# Symlinks
+TARGET_MOUNT_POINTS_SYMLINKS := false
 
-# Enable sensor multi HAL
-USE_SENSOR_MULTI_HAL := true
-
-#flag for qspm compilation
-TARGET_USES_QSPM := true
-
-#namespace definition for librecovery_updater
-#differentiate legacy 'sg' or 'bsg' framework
-SOONG_CONFIG_NAMESPACES += ufsbsg
-
-SOONG_CONFIG_ufsbsg += ufsframework
-SOONG_CONFIG_ufsbsg_ufsframework := bsg
-
-#namespace definition for perf
-SOONG_CONFIG_NAMESPACES += perf
-SOONG_CONFIG_perf += ioctl
-SOONG_CONFIG_perf_ioctl := true
-
-#-----------------------------------------------------------------
-# wlan specific
-#-----------------------------------------------------------------
-ifeq ($(strip $(BOARD_HAS_QCOM_WLAN)),true)
-ifeq ($(TARGET_USES_QMAA), true)
-ifneq ($(TARGET_USES_QMAA_OVERRIDE_WLAN), true)
-include device/qcom/wlan/default/BoardConfigWlan.mk
-else
-include device/qcom/wlan/lahaina/BoardConfigWlan.mk
-endif
-else
-include device/qcom/wlan/lahaina/BoardConfigWlan.mk
-endif
-endif
-
-#################################################################################
-# This is the End of BoardConfig.mk file.
-# Now, Pickup other split Board.mk files:
-#################################################################################
-# TODO: Relocate the system Board.mk files pickup into qssi lunch, once it is up.
--include $(sort $(wildcard vendor/qcom/defs/board-defs/system/*.mk))
--include $(sort $(wildcard vendor/qcom/defs/board-defs/vendor/*.mk))
-#################################################################################
-
-BUILD_BROKEN_DUP_RULES := true
-BUILD_BROKEN_NINJA_USES_ENV_VARS := TEMPORARY_DISABLE_PATH_RESTRICTIONS
-BUILD_BROKEN_NINJA_USES_ENV_VARS += RTIC_MPGEN
-BUILD_BROKEN_PREBUILT_ELF_FILES := true
-
-# KEYSTONE(If43215c7f384f24e7adeeabdbbb1790f174b2ec1,b/147756744)
-BUILD_BROKEN_NINJA_USES_ENV_VARS += SDCLANG_AE_CONFIG SDCLANG_CONFIG SDCLANG_SA_ENABLE
-
-BUILD_BROKEN_USES_BUILD_HOST_SHARED_LIBRARY := true
-BUILD_BROKEN_USES_BUILD_HOST_STATIC_LIBRARY := true
-BUILD_BROKEN_USES_BUILD_HOST_EXECUTABLE := true
-BUILD_BROKEN_USES_BUILD_COPY_HEADERS := true
-
-include device/qcom/sepolicy_vndr/SEPolicy.mk
+# VNDK
+BOARD_VNDK_VERSION := current
+PRODUCT_FULL_TREBLE_OVERRIDE := true
+PRODUCT_VENDOR_MOVE_ENABLED := true
+PRODUCT_COMPATIBLE_PROPERTY_OVERRIDE := true
+RECOVERY_SNAPSHOT_VERSION := current
+RAMDISK_SNAPSHOT_VERSION := current
