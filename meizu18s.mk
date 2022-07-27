@@ -60,7 +60,7 @@ PRODUCT_COPY_FILES += \
 include device/qcom/wlan/lahaina/wlan.mk
 
 # Properties
--include device/meizu/m2182/properties.mk
+-include device/meizu/meizu18s/properties.mk
 
 # Characteristics
 PRODUCT_CHARACTERISTICS := nosdcard
@@ -109,7 +109,7 @@ PRODUCT_COPY_FILES += \
 
 # libprocessgroup
 PRODUCT_COPY_FILES += \
-    device/meizu/m2182/task_profiles.json:$(TARGET_COPY_OUT_VENDOR)/etc/task_profiles.json
+    device/meizu/meizu18s/task_profiles.json:$(TARGET_COPY_OUT_VENDOR)/etc/task_profiles.json
 
 # VM
 PRODUCT_COPY_FILES += \
@@ -175,7 +175,7 @@ PRODUCT_COPY_FILES += \
 
 # GNSS
 PRODUCT_COPY_FILES += \
-    device/meizu/m2182/configs/sec_config:$(TARGET_COPY_OUT_VENDOR)/etc/sec_config
+    device/meizu/meizu18s/configs/sec_config:$(TARGET_COPY_OUT_VENDOR)/etc/sec_config
 
 # Servicetracker
 PRODUCT_PACKAGES += \
@@ -191,8 +191,8 @@ PRODUCT_PACKAGES += \
 
 # Whitelisted apps
 PRODUCT_COPY_FILES += \
-    device/meizu/m2182/configs/qti_whitelist.xml:system/etc/sysconfig/qti_whitelist.xml
+    device/meizu/meizu18s/configs/qti_whitelist.xml:system/etc/sysconfig/qti_whitelist.xml
 
 # Privileged permission
 PRODUCT_COPY_FILES += \
-    device/meizu/m2182/configs/privapp-permissions-qti.xml:system/etc/permissions/privapp-permissions-qti.xml
+    device/meizu/meizu18s/configs/privapp-permissions-qti.xml:system/etc/permissions/privapp-permissions-qti.xml

@@ -1,5 +1,5 @@
 PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/aospa_m2182.mk
+    $(LOCAL_DIR)/aospa_meizu18s.mk
 
 COMMON_LUNCH_CHOICES := \
-    aospa_m2182-userdebug
+    aospa_meizu18s-userdebug
