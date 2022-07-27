@@ -131,8 +131,8 @@ PRODUCT_PACKAGES += \
     android.hardware.fastboot@1.0-impl-mock
 
 # A/B
-PRODUCT_PACKAGES +=
-    checkpoint_gc \ 
+PRODUCT_PACKAGES += \
+    checkpoint_gc \
     update_engine \
     update_engine_client \
     update_engine_sideload \
